@@ -1,0 +1,13 @@
+[project]
+name = "langchain-rate-limiter-callback"
+version = "0.1.0"
+description = "A LangChain Callback Handler that enforces RPM and TPM rate limits."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "langchain-core>=0.1.0",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
