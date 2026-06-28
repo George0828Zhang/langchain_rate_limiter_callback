@@ -2,15 +2,15 @@ import unittest
 import logging
 from typing import List
 from langchain_core.messages import HumanMessage
-from langchain_rate_limiter_callback import LangChainRateLimiterCallback
+from langchain_rate_limiter_callback import RateLimiterCallback
 
 # Mock token count
 def mock_get_token_count(messages: List[HumanMessage]) -> int:
     return len([m.content for m in messages])
 
-class TestLangChainRateLimiterCallback(unittest.TestCase):
+class TestRateLimiterCallback(unittest.TestCase):
     def test_initialization(self):
-        callback = LangChainRateLimiterCallback(
+        callback = RateLimiterCallback(
             get_token_count=mock_get_token_count,
             requests_per_minute=60,
             tokens_per_minute=5000,
@@ -22,7 +22,7 @@ class TestLangChainRateLimiterCallback(unittest.TestCase):
         self.assertEqual(callback.tpm_rate, 5000.0 / 60.0)
 
     def test_consume_success(self):
-        callback = LangChainRateLimiterCallback(
+        callback = RateLimiterCallback(
             get_token_count=mock_get_token_count,
             requests_per_minute=60,
             tokens_per_minute=5000,
@@ -37,7 +37,7 @@ class TestLangChainRateLimiterCallback(unittest.TestCase):
         self.assertEqual(callback.available_tokens, 5000 - 101)
 
     def test_consume_rpm_limit(self):
-        callback = LangChainRateLimiterCallback(
+        callback = RateLimiterCallback(
             get_token_count=mock_get_token_count,
             requests_per_minute=1,
             tokens_per_minute=5000,

@@ -22,10 +22,10 @@ pip install -e .
 
 ### Basic Usage (Shared Callback Pattern)
 
-The `LangChainRateLimiterCallback` is **stateful** and must be **shared across all LLM instances** that should be jointly rate-limited. The callback maintains internal counters for RPM and TPM; if multiple LLM instances use separate callback instances, the rate limiting control fails because each instance counts its own requests independently.
+The `RateLimiterCallback` is **stateful** and must be **shared across all LLM instances** that should be jointly rate-limited. The callback maintains internal counters for RPM and TPM; if multiple LLM instances use separate callback instances, the rate limiting control fails because each instance counts its own requests independently.
 
 ```python
-from langchain_rate_limiter_callback import LangChainRateLimiterCallback
+from langchain_rate_limiter_callback import RateLimiterCallback
 from langchain_openai import ChatOpenAI
 import logging
 
@@ -37,7 +37,7 @@ def get_token_count(messages):
     return sum(len(m.content) for m in messages if hasattr(m, 'content') and m.content)
 
 # Initialize the rate limiter ONCE (stateful, shared across instances)
-rate_limiter = LangChainRateLimiterCallback(
+rate_limiter = RateLimiterCallback(
     get_token_count=get_token_count,
     requests_per_minute=60,      # Total RPM across ALL LLM instances
     tokens_per_minute=50000,     # Total TPM across ALL LLM instances
@@ -57,11 +57,11 @@ response3 = llm3.invoke("Write a poem")
 # Incorrect Pattern (FAILS rate limiting): Each LLM instance has its own callback
 # This effectively multiplies your RPM/TPM limits (rate limiting broken!)
 #
-# from langchain_rate_limiter_callback import LangChainRateLimiterCallback
-# llm1 = ChatOpenAI(model="gpt-4", callbacks=[LangChainRateLimiterCallback(
+# from langchain_rate_limiter_callback import RateLimiterCallback
+# llm1 = ChatOpenAI(model="gpt-4", callbacks=[RateLimiterCallback(
 #     get_token_count=get_token_count, requests_per_minute=60, tokens_per_minute=50000
 # )])
-# llm2 = ChatOpenAI(model="gpt-4", callbacks=[LangChainRateLimiterCallback(
+# llm2 = ChatOpenAI(model="gpt-4", callbacks=[RateLimiterCallback(
 #     get_token_count=get_token_count, requests_per_minute=60, tokens_per_minute=50000
 # )])
 ```
